@@ -3,12 +3,15 @@ from functools import wraps
 import jwt
 import requests
 
-#queti ovviamente li ho messi qua
-#per comodità, ma sapete dove vanno :)
-KEYCLOAK_URL = "URL KEYCLOAK SENZA LO /"
-REALM        = "prova"
-CLIENT_ID    = "provapp"
-JWKS_URL     = f"{KEYCLOAK_URL}/realms/{REALM}/protocol/openid-connect/certs"
+# config via environment (utile per diversi ambienti/devcontainer)
+# KEYCLOAK_URL deve essere l'URL base del server (es. http://localhost:8080)
+# In Keycloak 17+ l'endpoint REST è sotto /realms/<realm>/protocol/openid-connect
+import os
+
+KEYCLOAK_URL = os.getenv("https://potential-orbit-q7vq776j74wjc96jp-8080.app.github.dev")
+REALM = os.getenv("KEYCLOAK_REALM", "prova")
+CLIENT_ID = os.getenv("KEYCLOAK_CLIENT_ID", "provapp")
+JWKS_URL = f"{KEYCLOAK_URL}/realms/{REALM}/protocol/openid-connect/certs"
 
 #scarica la chiave pubblica di Keycloak 
 #per verificare che il JWT non sia stato alterato

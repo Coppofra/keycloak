@@ -9,6 +9,8 @@ services:
       KC_HTTP_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
       KC_PROXY_HEADERS: "xforwarded"
+      # importa il realm (ruoli + utenti) all'avvio
+      KEYCLOAK_IMPORT: /opt/keycloak/data/import/keycloak-realm.json
       # usa Postgres invece dell'H2 in-memory per persistenza
       KC_DB: postgres
       KC_DB_URL_HOST: db
@@ -38,6 +40,40 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  mysql:
+    image: mysql:8.1
+    container_name: registro-mysql
+    environment:
+      MYSQL_DATABASE: registro
+      MYSQL_USER: registro
+      MYSQL_PASSWORD: registro
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: ["--default-authentication-plugin=mysql_native_password"]
+
+  backend:
+    build:
+      context: ./backend
+    container_name: registro-backend
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_USER: registro
+      DB_PASSWORD: registro
+      DB_NAME: registro
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: prova
+      KEYCLOAK_CLIENT_ID: provapp
+    depends_on:
+      - mysql
+      - keycloak
+
 volumes:
   keycloak_data:
   postgres_data:
+  mysql_data:

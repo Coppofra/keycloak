@@ -1,59 +1,62 @@
-# Provapp
+# Registro Elettronico (Angular + Flask + Keycloak)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.0.
+Questo progetto è un esempio di una **applicazione Registro Elettronico** con:
 
-## Development server
+- **Frontend**: Angular (client standalone components)
+- **Backend**: Flask + PyMySQL (MySQL) con una semplice classe wrapper
+- **Autenticazione / Autorizzazione**: Keycloak con ruoli `docente` e `studente`
 
-To start a local development server, run:
+## ✅ Funzionalità principali
 
-```bash
-ng serve
-```
+### Docente
+- Inserisce un voto per uno studente (studente, materia, voto)
+- Visualizza i voti di tutti gli studenti
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### Studente
+- Visualizza solo i propri voti
 
-## Code scaffolding
+### Routing & Guard
+- Un docente vede solo l'area `Docente`
+- Uno studente vede solo l'area `Studente`
+- Accesso negato -> redirect su `/accesso-negato`
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 🧱 Esecuzione (Docker)
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+Avvia i servizi con:
 
 ```bash
-ng build
+docker compose up --build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### Accessi Keycloak per test
+- **Docente**: `docente1` / `docente123`
+- **Studente**: `studente1` / `studente123`
 
-## Running unit tests
+### Frontend
+- http://localhost:4200
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+### Backend API
+- http://localhost:5000
 
-```bash
-ng test
-```
+### Keycloak
+- http://localhost:8080
+  - username: **admin**
+  - password: **admin**
 
-## Running end-to-end tests
+## 🗂️ Struttura
 
-For end-to-end (e2e) testing, run:
+- `provapp/` → frontend Angular
+- `backend/` → API Flask + database
+- `docker-compose.yml` → avvia Keycloak, MySQL e backend
+- `keycloak-realm.json` → realm import per Keycloak (ruoli, client, utenti)
 
-```bash
-ng e2e
-```
+## 🧩 Nota tecnica
+Backend definisce le seguenti rotte:
+- `GET /voti` - ritorna i voti, filtrando per ruolo (docente vs studente)
+- `POST /voti` - inserisce un voto (solo docente)
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+La comunicazione tra frontend e backend avviene con un token JWT di Keycloak (Bearer header).
 
-## Additional Resources
+---
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Se vuoi estendere il modello (es. aggiungere anagrafiche studenti, materie, classi), la classe `backend/db.py` è il punto di partenza.

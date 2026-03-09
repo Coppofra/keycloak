@@ -1,9 +1,10 @@
 export const environment = {
     production: false,
     keycloak: {
-        url: 'https://potential-orbit-q7vq776j74wjc96jp-8080.app.github.dev',
+        url: 'http://localhost:8080',
         realm: 'prova',
         clientId: 'provapp',
         redirectUri: window.location.origin,
-    }
+    },
+    apiUrl: 'http://localhost:5000',
 };

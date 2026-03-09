@@ -1,0 +1,43 @@
+<h1>Area Docente</h1>
+<p>Benvenuto docente {{ auth.getUsername() }}: inserisci un voto per uno studente.</p>
+
+<form (submit)="$event.preventDefault(); addVoto()">
+  <label>
+    Studente
+    <input [(ngModel)]="studente" name="studente" />
+  </label>
+  <label>
+    Materia
+    <input [(ngModel)]="materia" name="materia" />
+  </label>
+  <label>
+    Voto
+    <input type="number" [(ngModel)]="voto" name="voto" min="0" max="10" />
+  </label>
+  <button type="submit">Aggiungi voto</button>
+</form>
+
+<div class="alerts">
+  <p class="error" *ngIf="error()">{{ error() }}</p>
+  <p class="success" *ngIf="success()">{{ success() }}</p>
+</div>
+
+<h2>Voti inseriti</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Studente</th>
+      <th>Materia</th>
+      <th>Voto</th>
+      <th>Data</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let v of voti()">
+      <td>{{ v.studente }}</td>
+      <td>{{ v.materia }}</td>
+      <td>{{ v.voto }}</td>
+      <td>{{ v.created_at | date: 'short' }}</td>
+    </tr>
+  </tbody>
+</table>

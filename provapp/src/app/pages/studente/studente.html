@@ -1,0 +1,21 @@
+<h1>Area Studente</h1>
+<p>Ciao {{ auth.getUsername() }}, ecco i tuoi voti:</p>
+
+<p class="error" *ngIf="error()">{{ error() }}</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Materia</th>
+      <th>Voto</th>
+      <th>Data</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let v of voti()">
+      <td>{{ v.materia }}</td>
+      <td>{{ v.voto }}</td>
+      <td>{{ v.created_at | date: 'short' }}</td>
+    </tr>
+  </tbody>
+</table>
