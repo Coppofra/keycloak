@@ -2,8 +2,11 @@ import os
 import time
 from typing import Dict, List, Optional
 
+from dotenv import load_dotenv
 import pymysql
 from pymysql.cursors import DictCursor
+
+load_dotenv()
 
 
 class Database:
@@ -42,7 +45,7 @@ class Database:
                 delay = min(delay * 2, 5)
 
     def _ensure_tables(self):
-        sql = """
+        sql_voti = """
         CREATE TABLE IF NOT EXISTS voti (
             id INT AUTO_INCREMENT PRIMARY KEY,
             studente VARCHAR(255) NOT NULL,
@@ -51,8 +54,16 @@ class Database:
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
         """
+        sql_items = """
+        CREATE TABLE IF NOT EXISTS items (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nome VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """
         with self._conn.cursor() as cur:
-            cur.execute(sql)
+            cur.execute(sql_voti)
+            cur.execute(sql_items)
 
     def add_grade(self, studente: str, materia: str, voto: int) -> int:
         """Inserisce un voto e restituisce l'id."""
@@ -72,3 +83,20 @@ class Database:
         with self._conn.cursor() as cur:
             cur.execute(sql, (studente,))
             return cur.fetchall()
+
+    def get_items(self) -> List[Dict]:
+        sql = "SELECT id, nome, created_at FROM items ORDER BY created_at DESC"
+        with self._conn.cursor() as cur:
+            cur.execute(sql)
+            return cur.fetchall()
+
+    def add_item(self, nome: str) -> int:
+        sql = "INSERT INTO items (nome) VALUES (%s)"
+        with self._conn.cursor() as cur:
+            cur.execute(sql, (nome,))
+            return cur.lastrowid
+
+    def delete_item(self, item_id: int):
+        sql = "DELETE FROM items WHERE id = %s"
+        with self._conn.cursor() as cur:
+            cur.execute(sql, (item_id,))
